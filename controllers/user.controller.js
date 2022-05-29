@@ -2,58 +2,85 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const User = require("../models/Ures.model");
+const Basket = require("../models/Basket.model");
 
 module.exports.userController = {
   registerUser: async (req, res) => {
     try {
-      const { name, login, password } = req.body;
+      const { login, password } = req.body;
+
       const hash = await bcrypt.hash(
         password,
         Number(process.env.BCRYPT_ROUNDS)
       );
-      const user = await User.create({
-        name,
+
+      const userCreated = await User.create({
         login,
         password: hash,
       });
-      res.json(user);
+
+      const user = await User.findOne({ login });
+
+      const basket = await Basket.create({
+        basketName: `Хозяин корзины: ${user.login}`,
+        userBasket: user.id,
+      });
+
+      res.json(userCreated);
     } catch (err) {
       res.json(err.toString());
     }
   },
-  // eslint-disable-next-line consistent-return
+
   loginUser: async (req, res) => {
     try {
       const { login, password } = req.body;
       const user = await User.findOne({ login });
+      const basket = await Basket.findOne({ login });
 
-      if (!login) {
-        return res.json("Неправильный логин или пароль");
+      if (!user) {
+        return res.json(null);
       }
+
       const valid = await bcrypt.compare(password, user.password);
+
       if (!valid) {
-        return res.json("Неправильный логин или пароль");
+        return res.json(null);
       }
+
       const payload = {
         id: user._id,
-        name: user.name,
+        login: user.login,
       };
-      const token = await jwt.sign(payload, "10", {
+
+      const token = await jwt.sign(payload, process.env.SECRET_KEY, {
         expiresIn: "30d",
       });
 
-      res.json(token);
-    } catch (err) {
-      res.json(err.toString());
+      res.json({ token, basket });
+    } catch (error) {
+      res.json({ error: error.toString() });
     }
   },
 
   getUser: async (req, res) => {
     try {
-      const user = await User.findOne({ name: req.user.name });
+      const user = await User.findOne({ login: req.user.login });
+
       res.json(user);
     } catch (error) {
       res.json(error);
+    }
+  },
+  getBasket: async (req, res) => {
+    try {
+      const basket = await Basket.findOne({ userBasket: req.user.id }).populate(
+        "basket"
+      );
+
+      res.json(basket);
+    } catch (err) {
+      res.json(err.toString());
     }
   },
 };

@@ -1,7 +1,7 @@
-const Sofa = require("../models/Sofa.model");
+const Armchairs = require("../models/Armchair.model");
 
-module.exports.sofaController = {
-  postSofa: async (req, res) => {
+module.exports.armchairsController = {
+  postArmchairs: async (req, res) => {
     const {
       name,
       price,
@@ -9,6 +9,7 @@ module.exports.sofaController = {
       img,
       liked,
       onBasket,
+      manufacturer,
       dimensions,
       backHeight,
       armrestHeightFromSeat,
@@ -19,17 +20,22 @@ module.exports.sofaController = {
       sleepingPlace,
       layoutMechanism,
       desc,
+      width,
+      depth,
+      height,
+      material,
     } = req.body;
     try {
-      const sofa = await Sofa.create({
+      const armchair = await Armchairs.create({
         name,
         price,
         type,
         img,
         liked,
         onBasket,
+        manufacturer,
 
-        discription: {
+        description: {
           dimensions,
           backHeight,
           armrestHeightFromSeat,
@@ -41,17 +47,24 @@ module.exports.sofaController = {
           layoutMechanism,
           desc,
         },
+
+        characteristics: {
+          width,
+          depth,
+          height,
+          material,
+        },
       });
-      res.json(sofa);
+      res.json(armchair);
     } catch (err) {
       res.json(err.toString());
     }
   },
 
-  getSofas: async (req, res) => {
+  getArmchairs: async (req, res) => {
     try {
-      const sofas = await Sofa.find();
-      res.json(sofas);
+      const armchairs = await Armchairs.find().populate("type");
+      res.json(armchairs);
     } catch (err) {
       res.json(err.toString());
     }
