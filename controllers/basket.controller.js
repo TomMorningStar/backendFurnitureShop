@@ -1,7 +1,6 @@
 const Basket = require("../models/Basket.model");
 const Armchair = require("../models/Armchair.model");
 const Sofa = require("../models/Sofa.model");
-const { userController } = require("./user.controller");
 
 module.exports.basketController = {
   postArmchairToBasket: async (req, res) => {
@@ -16,6 +15,7 @@ module.exports.basketController = {
 
       const result = await Armchair.findByIdAndUpdate(id, {
         onBasket: true,
+        amount: 1,
       });
 
       res.json(result);
@@ -35,6 +35,7 @@ module.exports.basketController = {
 
       await Armchair.findByIdAndUpdate(id, {
         onBasket: false,
+        amount: 1,
       });
 
       res.json(product);
@@ -64,6 +65,32 @@ module.exports.basketController = {
       );
 
       res.json(baskets);
+    } catch (err) {
+      res.json(err.toString());
+    }
+  },
+  incrementArmchairAmount: async (req, res) => {
+    try {
+      const current = await Armchair.findById(req.params.id);
+
+      const product = await Armchair.findByIdAndUpdate(req.params.id, {
+        amount: current.amount + 1,
+      });
+
+      res.json(product);
+    } catch (err) {
+      res.json(err.toString());
+    }
+  },
+  decrementArmchairAmount: async (req, res) => {
+    try {
+      const current = await Armchair.findById(req.params.id);
+
+      const product = await Armchair.findByIdAndUpdate(req.params.id, {
+        amount: current.amount - 1,
+      });
+
+      res.json(product);
     } catch (err) {
       res.json(err.toString());
     }

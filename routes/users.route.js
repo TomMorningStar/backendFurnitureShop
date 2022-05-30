@@ -8,5 +8,6 @@ router.post("/user/register", userController.registerUser);
 router.post("/user/login", userController.loginUser);
 router.get("/user", authMiddleware, userController.getUser);
 router.get("/get/basket", authMiddleware, userController.getBasket);
+router.get("/get/liked", authMiddleware, userController.getLiked);
 
 module.exports = router;
