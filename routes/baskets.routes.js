@@ -14,6 +14,16 @@ router.patch(
   authMiddleware,
   basketController.pulltArmchairFromBasket
 );
+router.patch(
+  "/basket/armchair/increment/:id",
+  authMiddleware,
+  basketController.incrementArmchairAmount
+);
+router.patch(
+  "/basket/armchair/decrement/:id",
+  authMiddleware,
+  basketController.decrementArmchairAmount
+);
 router.patch("/basket/sofa/:id", authMiddleware, basketController.postSofa);
 router.get("/basket/armchairs", authMiddleware, basketController.getArmchairs);
 

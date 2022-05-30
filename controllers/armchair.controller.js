@@ -5,6 +5,7 @@ module.exports.armchairsController = {
     const {
       name,
       price,
+      amount,
       type,
       img,
       liked,
@@ -34,7 +35,7 @@ module.exports.armchairsController = {
         liked,
         onBasket,
         manufacturer,
-
+        amount,
         description: {
           dimensions,
           backHeight,

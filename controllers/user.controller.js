@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../models/Ures.model");
 const Basket = require("../models/Basket.model");
+const Liked = require("../models/Liked.model");
 
 module.exports.userController = {
   registerUser: async (req, res) => {
@@ -21,9 +22,14 @@ module.exports.userController = {
 
       const user = await User.findOne({ login });
 
-      const basket = await Basket.create({
+      await Basket.create({
         basketName: `Хозяин корзины: ${user.login}`,
         userBasket: user.id,
+      });
+
+      await Liked.create({
+        likedName: `Хозяин Лайкнутых продуктов: ${user.login}`,
+        userLiked: user.id,
       });
 
       res.json(userCreated);
@@ -79,6 +85,17 @@ module.exports.userController = {
       );
 
       res.json(basket);
+    } catch (err) {
+      res.json(err.toString());
+    }
+  },
+  getLiked: async (req, res) => {
+    try {
+      const liked = await Liked.findOne({ userBasket: req.user.id }).populate(
+        "likedItems"
+      );
+
+      res.json(liked);
     } catch (err) {
       res.json(err.toString());
     }
